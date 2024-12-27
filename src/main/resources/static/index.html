@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OA Jenkins 项目测试</title>
+
+    <!-- 引入 jQuery 库 -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- 页面样式 -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #fff;
+        }
+        table th, table td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        table th {
+            background-color: #f4f4f4;
+        }
+        button {
+            padding: 5px 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .loading {
+            display: none;
+            color: #007bff;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<h1>OA Jenkins 项目测试</h1>
+<p>此页面用于测试从数据库中获取项目列表并触发 Jenkins 构建。</p>
+
+<!-- 显示加载状态 -->
+<p class="loading" id="loading">加载中，请稍候...</p>
+
+<!-- 项目列表表格 -->
+<table id="projectsTable">
+    <thead>
+    <tr>
+        <th>项目名称</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- 动态加载内容 -->
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function () {
+        // 显示加载状态
+        $("#loading").show();
+
+        // 使用 AJAX 调用 /projects 接口获取项目列表
+        $.ajax({
+            url: "/projects", // 调用后端的 /projects 接口
+            type: "GET",      // GET 请求获取数据
+            success: function (response) {
+                // 隐藏加载状态
+                $("#loading").hide();
+
+                // 清空表格内容
+                $("#projectsTable tbody").empty();
+
+                // 遍历返回的项目列表，动态生成表格行
+                response.forEach(function (project) {
+                    $("#projectsTable tbody").append(`
+                            <tr>
+                                <td>${project}</td>
+                                <td>
+                                    <button onclick="triggerBuild('${project}')">触发 Jenkins 构建</button>
+                                </td>
+                            </tr>
+                        `);
+                });
+            },
+            error: function (xhr, status, error) {
+                $("#loading").hide();
+                alert("加载项目列表失败：" + error);
+            }
+        });
+    });
+
+    // 定义触发 Jenkins 构建的函数
+    function triggerBuild(projectId) {
+        // 使用 AJAX 调用 /trigger-build 接口
+        $.ajax({
+            url: "/trigger-build", // 调用后端的 /trigger-build 接口
+            type: "POST",          // POST 请求触发构建
+            data: { projectId: projectId }, // 将项目 ID 作为请求参数传递
+            success: function (response) {
+                alert(response); // 弹出后台返回的成功消息
+            },
+            error: function (xhr, status, error) {
+                alert("触发 Jenkins 构建失败：" + error);
+            }
+        });
+    }
+</script>
+</body>
+</html>

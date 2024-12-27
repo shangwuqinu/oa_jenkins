@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.api.interfaces.wjm.workflow.mapper.ProjectMapper">
+
+    <resultMap id="BaseResultMap" type="com.api.interfaces.wjm.workflow.dal.project.ProjectDO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="project_load" property="projectLoad" jdbcType="VARCHAR"/>
+        <result column="project_name" property="projectName" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="getProject" resultMap="BaseResultMap">
+        SELECT id, project_load, project_name
+        FROM project
+        WHERE project_name = #{projectName}
+    </select>
+</mapper>
